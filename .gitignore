@@ -1,0 +1,18 @@
+# Don't track content of these folders
+results/*
+
+.bash_history
+.cache/
+.java/
+.benchmarks/
+.snakemake/
+.DS_Store
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
