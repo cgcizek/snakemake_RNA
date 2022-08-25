@@ -14,7 +14,7 @@ Paths to raw data are located in the file `units.tsv`. The file has the followin
 
 | sample | lane | fq1 | fq2 |
 |--------|------|-----|------|
-| name_of_sample | name_of_lane_or_resequencing | path/to/forward.fastq | path/to/reverse.fastq |
+| name-of-sample | name-of-lane-or-resequencing | path/to/forward.fastq | path/to/reverse.fastq |
 
 * The first field correspond to the sample name. This field has to be the same as the sample name that is specified in the `samples.tsv` file (see below). It is recommended to NOT use underscores in the name of the samples, dashed are prefered. I still don't understand why sometimes I get errors if I use them so before fixing I strongly recommend to use dashes instead.
 
@@ -41,7 +41,7 @@ All metadata and information regarding every sample is located in `samples.tsv`.
 
 | sample | condition | 
 |------|-------|
-| name_of_sample | group for differential expression |
+| name-of-sample | group for differential expression |
 
 * `sample`: The name of the samples. They have to match those in `units.tsv` (1 entry per sample).
 * `condition`: This will be the grouping for the differential expression analysis. Samples with the same condition will be treated as biological replicates by DESeq2. 
