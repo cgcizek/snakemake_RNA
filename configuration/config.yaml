@@ -41,8 +41,18 @@ ref:
   genome: "mouse"
   # the STAR index
   index: /hpcnfs/data/DP/STAR_INDEXES/v2.7.5a/GRCm38
+  
+  ##### SALMON
   # gtf file with transcripts
-  annotation: /hpcnfs/data/DP/STAR_INDEXES/v2.7.5a/GRCm38/gencode.vM21.annotation.gtf
+  annotation: /hpcnfs/data/DP/GENCODE_GENOMES/GRCm38/M21/gencode.vM21.annotation.gtf
+  # fasta of transcripts
+  transcriptome:  /hpcnfs/data/DP/GENCODE_GENOMES/GRCm38/M21/gencode.vM21.transcripts.fa.gz
+  # assembly of genome
+  assembly: /hpcnfs/data/DP/GENCODE_GENOMES/GRCm38/M21/GRCm38.primary_assembly.genome.fa.gz
+  # Name of the annotation (ensembl, symbol, entrez...) it will be the column name of the genes
+  # It will also be the column used for the conversion of gene-to-entrez for clusterProfiler.
+  # The name has to be compatible with org.Mm.eg.db or org.Hg.eg.db
+  annot_type: "ENSEMBL"
   # This will be used to add different annotations to the DEGs table.
   # i.e: ensembl, entrez, ucsc... 
   geneInfo: 
@@ -52,10 +62,12 @@ ref:
     # Define the position of the column used for the annotation and the column to add.
     # So, if we used geneSymbol as annotation (2nd column) and we want ENSEMBL (first)
     # Write 2 in used and 1 in toAdd
-    column_used: 2
-    column_toAdd: 1
+    column_used: 1
+    column_toAdd: 2
     # Name of the annotation to add (ENSEMBL, SYMBOL, ENTREZID...)
-    name_annotation: "ENSEMBL"
+    name_annotation: "SYMBOL"
+    # Columns to skip in case the file has a wired header (like in the case of genInfo.tab from STAR)
+    skip: 1
 
 
 pca:
@@ -112,12 +124,11 @@ params:
   # Memory used by every core of samtools (GB). Be careful that
   # memory x threads is not bigger than the amount of memory assigned to align rule
   samtools_mem: 3
-  star: "--outSAMattributes Standard \
-        --outFilterMultimapNmax 1 \
-        --readFilesCommand zcat"
-  # By now the column used by featureCounts MUST contain the SYMBOL annotation since it's the one
-  # used to transform gene names to ENTREZID for the enrichment analysis
-  featureCounts: "-s 0 -t exon -g gene_name"
+  star: "--readFilesCommand zcat"
+  # Salmon params
+  salmon: "--gcBias --seqBias --validateMappings"
+  # Library type (stranded, non-stranded, inward,outward...). A means automatic, salmon will care about it.
+  salmon_library: "A"
   # In case trimming is set to true, define trimmining parameters
   fastp-se: "--stdin -t 1 -A -Q -L"
   fastp-pe: "-t 1 -A -Q -L"
