@@ -66,13 +66,14 @@ rule salmon_quant_g:
 
 # Quantification using "salmon quant" without the -g flag and tximport, as suggested by Rob Paltro
 # https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
+
 rule salmon_quant_tximport:
     input:
         index = "results/02_salmon/salmon_index",
         fastq = get_fq,
     output:
         quant       = "results/02_salmon_tx/{sample}/quant.sf",
-        quant_genes = "results/02_salmon_tx/{sample}/quant.genes.sf",
+        #quant_genes = "results/02_salmon_tx/{sample}/quant.genes.sf",
         sam         = "results/02_salmon_tx/{sample}/{sample}.sam",
     log: 
         "results/00log/salmonQuant_tx/{sample}.log"
