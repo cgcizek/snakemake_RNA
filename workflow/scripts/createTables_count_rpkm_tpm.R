@@ -11,15 +11,12 @@ source("workflow/scripts/custom_functions.R")
 # Preapre count table
 #------------------------------------------------------------------------------------------
 read_files <- snakemake@input %>%
-  purrr::map(read.delim, header = TRUE, skip = 1) %>%
-  purrr::map(select, 1,6,7) %>% # Select geneid, length and counts
-  purrr::map(setNames, c("Geneid", "Length", "Counts")) %>%
-  purrr::map(~ mutate(.x, fpkm = do_fpkm(Counts,Length))) %>%
-  purrr::map(~ mutate(.x, tpm  = do_tpm(Counts,Length)))
+  purrr::map(read.delim, header = TRUE) %>%
+  purrr::map(setNames, c("Geneid", "Length", "Effective_Length", "TPM", "Counts")) %>%
+  purrr::map(~ mutate(.x, fpkm = do_tpm(Counts,Length))) # why is he doing fpkm = do_tpm ??
   
-sample_names <- unlist(snakemake@input) %>%
-  basename %>%
-  gsub(pattern = ".featureCounts", replacement = "")
+
+sample_names <- as.character(snakemake@params[["sample_names"]])
 
 
 # Create a df with raw counts, fpkm and tpm
@@ -34,7 +31,7 @@ fpkm <- read_files %>%
   setNames(c("Geneid", sample_names))
 
 tpm <- read_files %>%
-  purrr::map(select, Geneid, tpm) %>%
+  purrr::map(select, Geneid, TPM) %>%
   plyr::join_all(type='inner', by = "Geneid") %>% 
   setNames(c("Geneid", sample_names)) 
 

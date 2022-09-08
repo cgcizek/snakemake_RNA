@@ -60,7 +60,7 @@ goEnrichment <- function(
   universe = NULL
   ) {
   require(clusterProfiler)
-    ego <- enrichGO(gene          = df,
+    ego <- enrichGO(gene        = df,
                   OrgDb         = db,
                   keyType       = 'ENTREZID',
                   ont           = ont,

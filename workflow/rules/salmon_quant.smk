@@ -67,80 +67,80 @@ rule salmon_quant_g:
 # Quantification using "salmon quant" without the -g flag and tximport, as suggested by Rob Paltro
 # https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
 
-rule salmon_quant_tximport:
-    input:
-        index = "results/02_salmon/salmon_index",
-        fastq = get_fq,
-    output:
-        quant       = "results/02_salmon_tx/{sample}/quant.sf",
-        #quant_genes = "results/02_salmon_tx/{sample}/quant.genes.sf",
-        sam         = "results/02_salmon_tx/{sample}/{sample}.sam",
-    log: 
-        "results/00log/salmonQuant_tx/{sample}.log"
-    params:
-        options       = config["params"]["salmon"],
-        library       = config["params"]["salmon_library"],
-        out_fold      = "results/02_salmon/{sample}",
-        reads  	      = set_reads,
-    threads:    
-        CLUSTER["salmon_quant"]["cpu"]
-    shell:
-        """
-        salmon quant \
-        -i {input.index} \
-        -p {threads} \
-        -l {params.library}\
-        {params.reads} \
-        -o {params.out_fold} \
-        {params.options} \
-        2> {log} \
-        > {output.sam}
-        """
+# rule salmon_quant_tximport:
+#     input:
+#         index = "results/02_salmon/salmon_index",
+#         fastq = get_fq,
+#     output:
+#         quant       = "results/02_salmon_tx/{sample}/quant.sf",
+#         #quant_genes = "results/02_salmon_tx/{sample}/quant.genes.sf",
+#         sam         = "results/02_salmon_tx/{sample}/{sample}.sam",
+#     log: 
+#         "results/00log/salmonQuant_tx/{sample}.log"
+#     params:
+#         options       = config["params"]["salmon"],
+#         library       = config["params"]["salmon_library"],
+#         out_fold      = "results/02_salmon/{sample}",
+#         reads  	      = set_reads,
+#     threads:    
+#         CLUSTER["salmon_quant"]["cpu"]
+#     shell:
+#         """
+#         salmon quant \
+#         -i {input.index} \
+#         -p {threads} \
+#         -l {params.library}\
+#         {params.reads} \
+#         -o {params.out_fold} \
+#         {params.options} \
+#         2> {log} \
+#         > {output.sam}
+#         """
 
 ### Salmon Alignment mode
 # Fall back to Alignment based quantification with STAR but use Salmon in align mode instead of featureCounts
 # # Most star parameters taken from https://www.biorxiv.org/content/biorxiv/early/2019/10/31/657874.full.pdf
-rule star:
-    input:
-        get_fq
-    output:
-        bam   = "results/02alignments/{sample}/{sample}.bam",
-        log   = "results/02alignments/{sample}/Log.final.out"
-    log:
-        align   = "results/00log/alignments/{sample}.log",
-        rm_dups = "results/00log/alignments/rm_dup/{sample}.log",
-    params:
-        out_dir      = "results/02alignments/{sample}/",
-        star_params  = config["params"]["star"],
-        # path to STAR reference genome index
-        index        = config["ref"]["index"],
-        samtools_mem = config["params"]["samtools_mem"]
-    threads:
-        CLUSTER["star"]["cpu"]
-    shadow: 
-        "minimal"
-    shell: 
-        """
-        STAR --genomeDir {params.index} \
-        --runThreadN {threads} \
-        --readFilesIn {input} \
-        --outFileNamePrefix {params.out_dir} \
-        --outSAMtype None \
-        --outStd Log \
-        --quantMode TranscriptomeSAM \
-        --outSAMunmapped Within \
-        --quantTranscriptomeBan Singleend \
-        --outFilterType BySJout \
-        --alignSJoverhangMin 8 \
-        --outFilterMultimapNmax 20 \
-        --alignSJDBoverhangMin 1 \
-        --outFilterMismatchNmax 999 \
-        --outFilterMismatchNoverReadLmax 0.04 \
-        --alignIntronMin 20 \
-        --alignIntronMax 1000000 \
-        --alignMatesGapMax 1000000 \
-        {params.star_params} > {log.align}
-        samtools view -h {params.out_dir}Aligned.toTranscriptome.out.bam \
-        | samblaster --removeDups 2> {log.rm_dups} \
-        | samtools view -Sb - > {output.bam} 2>> {log.align}
-        """
+# rule star:
+#     input:
+#         get_fq
+#     output:
+#         bam   = "results/02alignments/{sample}/{sample}.bam",
+#         log   = "results/02alignments/{sample}/Log.final.out"
+#     log:
+#         align   = "results/00log/alignments/{sample}.log",
+#         rm_dups = "results/00log/alignments/rm_dup/{sample}.log",
+#     params:
+#         out_dir      = "results/02alignments/{sample}/",
+#         star_params  = config["params"]["star"],
+#         # path to STAR reference genome index
+#         index        = config["ref"]["index"],
+#         samtools_mem = config["params"]["samtools_mem"]
+#     threads:
+#         CLUSTER["star"]["cpu"]
+#     shadow: 
+#         "minimal"
+#     shell: 
+#         """
+#         STAR --genomeDir {params.index} \
+#         --runThreadN {threads} \
+#         --readFilesIn {input} \
+#         --outFileNamePrefix {params.out_dir} \
+#         --outSAMtype None \
+#         --outStd Log \
+#         --quantMode TranscriptomeSAM \
+#         --outSAMunmapped Within \
+#         --quantTranscriptomeBan Singleend \
+#         --outFilterType BySJout \
+#         --alignSJoverhangMin 8 \
+#         --outFilterMultimapNmax 20 \
+#         --alignSJDBoverhangMin 1 \
+#         --outFilterMismatchNmax 999 \
+#         --outFilterMismatchNoverReadLmax 0.04 \
+#         --alignIntronMin 20 \
+#         --alignIntronMax 1000000 \
+#         --alignMatesGapMax 1000000 \
+#         {params.star_params} > {log.align}
+#         samtools view -h {params.out_dir}Aligned.toTranscriptome.out.bam \
+#         | samblaster --removeDups 2> {log.rm_dups} \
+#         | samtools view -Sb - > {output.bam} 2>> {log.align}
+#         """
