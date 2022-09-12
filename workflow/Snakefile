@@ -65,18 +65,6 @@ rule all:
             fpkm   = config["diffexp"]["fpkm"]) +
         enrichments
 
-# rule all_starFc: 
-#     input:
-#         expand("results/04deseq2/pca_top{ntop}.pdf", ntop = config["pca"]["ntop"]),
-#         "results/01qc/multiqc/multiqc_report.html",
-#         expand("results/05bigwig/{sample}.bw", sample = SAMPLES),
-#         enrichments,
-#         expand("results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_volcano_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.pdf", 
-#             contrast = config["diffexp"]["contrasts"], 
-#             pvalue = config["diffexp"]["pvalue"], 
-#             log2fc = config["diffexp"]["log2fc"],
-#             fpkm   = config["diffexp"]["fpkm"])
-
 rule all_downsampled: 
     input:
         "results/04deseq2/downsampled/pca.pdf",
@@ -93,7 +81,6 @@ rule all_downsampled:
 ##### load rules #####
 include: "rules/common.smk"
 include: "rules/trim.smk"
-#include: "rules/align.smk"
 include: "rules/salmon_quant.smk"
 include: "rules/diffExp.smk"
 include: "rules/diffExp_downsample.smk"
