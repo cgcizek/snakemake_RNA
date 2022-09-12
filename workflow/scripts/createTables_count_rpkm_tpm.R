@@ -28,7 +28,7 @@ counts <- read_files %>%
 fpkm <- read_files %>%
   purrr::map(select, Geneid, fpkm) %>%
   plyr::join_all(type='inner', by = "Geneid") %>% 
-  setNames(c("Geneid", sample_names))
+  setNames(c("Geneid", sample_names)) 
 
 tpm <- read_files %>%
   purrr::map(select, Geneid, TPM) %>%

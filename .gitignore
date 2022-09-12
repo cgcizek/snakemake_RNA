@@ -16,3 +16,4 @@ results/*
 *.exe
 *.o
 *.so
+*.bak

@@ -4,7 +4,7 @@ rule salmon_index:
         primary_assembly = config["ref"]["assembly"],
         transcripts      = config["ref"]["transcriptome"],
     output:
-        index = directory("results/02_salmon/salmon_index"),
+        index = directory("results/02_salmon_g/salmon_index"),
     log:
         "results/00log/salmonIndex/log"
     threads:
@@ -16,9 +16,8 @@ rule salmon_index:
         sed -i.bak -e 's/>//g' decoys.txt
         cat {input.transcripts} {input.primary_assembly} > gentrome.fa.gz
         salmon index -t gentrome.fa.gz -d decoys.txt -p {threads} -i {output} --gencode
-        rm decoys.txt gentrome.fa.gz
+		rm decoys.txt* gentrome.fa.gz
         """
-
 
 def set_reads(wildcards, input):
         n = len(input.fastq)
@@ -34,7 +33,7 @@ def set_reads(wildcards, input):
 
 rule salmon_quant_g:
     input:
-        index = "results/02_salmon/salmon_index",
+        index = "results/02_salmon_g/salmon_index",
         fastq = get_fq,
     output:
         quant       = "results/02_salmon_g/{sample}/quant.sf",
@@ -46,10 +45,10 @@ rule salmon_quant_g:
         gtf           = config["ref"]["annotation"],
         options       = config["params"]["salmon"],
         library       = config["params"]["salmon_library"],
-        out_fold      = "results/02_salmon/{sample}",
+        out_fold      = "results/02_salmon_g/{sample}",
         reads  	      = set_reads,
     threads:    
-        CLUSTER["salmon_quant"]["cpu"]
+        CLUSTER["salmon_quant_g"]["cpu"]
     shell:
         """
         salmon quant \
@@ -80,7 +79,7 @@ rule salmon_quant_g:
 #     params:
 #         options       = config["params"]["salmon"],
 #         library       = config["params"]["salmon_library"],
-#         out_fold      = "results/02_salmon/{sample}",
+#         out_fold      = "results/02_salmon_tx/{sample}",
 #         reads  	      = set_reads,
 #     threads:    
 #         CLUSTER["salmon_quant"]["cpu"]

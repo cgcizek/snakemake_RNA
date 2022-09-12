@@ -93,15 +93,9 @@ diffexp:
     - 2.5
   # contrasts for the deseq2 results method
   contrasts:
-    CTR_T-vs-CTR_NT:
-      - CTR_T
-      - CTR_NT
-    P6KO_NT-vs-CTR_NT:
-      - P6KO_NT
-      - CTR_NT
-    P6KO_T-vs-CTR_NT:
-      - P6KO_T
-      - CTR_NT
+    WT_P1-vs-P1KO:
+      - WT_00h
+      - Pcgf1KO_00h
 
       
 enrichments:
