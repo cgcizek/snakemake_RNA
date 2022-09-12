@@ -71,7 +71,7 @@ rule pca:
     script:
         "../scripts/plot-PCA.R"
 
-rule filter_deg_g:
+rule filter_deg:
     input:
         diffExp = rules.get_contrasts.output.table,
     output:
@@ -85,20 +85,20 @@ rule filter_deg_g:
     script:
         "../scripts/filter_deg.R"
 
-# rule enrichments:
-#     input:
-#         rules.filter_deg.output
-#     output:
-#         enrichments = "results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.xlsx",
-#     params:
-#         genome       = config["ref"]["genome"],
-#         pvalue       = config["enrichments"]["pval"],
-#         qvalue       = config["enrichments"]["qval"],
-#         set_universe = config["enrichments"]["set_universe"],
-#     log:
-#         "results/00log/deseq2/{contrast}.log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.enrichments.log"
-#     script:
-#         "../scripts/enrichments.R"   
+rule enrichments:
+    input:
+        rules.filter_deg.output
+    output:
+        enrichments = "results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.xlsx",
+    params:
+        genome       = config["ref"]["genome"],
+        pvalue       = config["enrichments"]["pval"],
+        qvalue       = config["enrichments"]["qval"],
+        set_universe = config["enrichments"]["set_universe"],
+    log:
+        "results/00log/deseq2/{contrast}.log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.enrichments.log"
+    script:
+        "../scripts/enrichments.R"   
 
 
 rule volcano:

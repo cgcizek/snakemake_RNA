@@ -62,8 +62,8 @@ rule all:
             contrast = config["diffexp"]["contrasts"], 
             pvalue = config["diffexp"]["pvalue"], 
             log2fc = config["diffexp"]["log2fc"],
-            fpkm   = config["diffexp"]["fpkm"]) #+
-        #enrichments
+            fpkm   = config["diffexp"]["fpkm"]) +
+        enrichments
 
 # rule all_starFc: 
 #     input:

@@ -1,3 +1,4 @@
+## Migrate the output to a DATA/DP and run it only once per transcriptome version
 # the commands of the index rule were obtained from here: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
 rule salmon_index:
     input:
