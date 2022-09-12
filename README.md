@@ -1,6 +1,12 @@
-# Pasini's lab RNA-seq pipeline
+# Pasini's lab RNA-seq pipeline (Salmon branch)
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.4.3-brightgreen.svg)](https://snakemake.bitbucket.io)
+
+This branch uses Salmon to quantify *transcript abundance*, if you want the old Alignment + count method (STAR + featureCounts), change to main branch
+```
+git clone git@github.com:AndreaMariani-AM/RNAseq_snakemake.git
+git checkout main
+```
 
 Snakemake-based RNA-seq pipeline to be run in our PBS-based HPC using singularity containers. The singularity image that is used to run this pipeline is created from [this](https://github.com/AndreaMariani-AM/Docker/blob/main/RNAseq-snakemake/Dockerfile) docker container.
 
