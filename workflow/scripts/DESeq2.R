@@ -19,8 +19,8 @@ files        <- unlist(snakemake@input)
 names(files) <- as.character(snakemake@params[["sample_names"]])
 
 txdb    	 <- makeTxDbFromGFF(file=snakemake@params[["tx2gene"]])
-k       	 <- keys(txdb, keytype = "TXNAME")
-tx2gene 	 <- select(txdb, k, "GENEID", "TXNAME")
+k       	 <- AnnotationDbi::keys(txdb, keytype = "TXNAME")
+tx2gene 	 <- AnnotationDbi::select(txdb, k, "GENEID", "TXNAME")
 
 
 #------------------------------------------------------------------------------------------

@@ -31,12 +31,12 @@
 		"cpu" : 8,
 		"MaxMem": 40
 	},
-	"salmon_quant_g":
+	"salmon_quant":
 	{
 		"cpu" : 6,
 		"MaxMem" : 30
 	},
-	"deseq2_g":
+	"deseq2":
 	{
 		"MaxMem" : 16,
 		"EmailNotice": "e"

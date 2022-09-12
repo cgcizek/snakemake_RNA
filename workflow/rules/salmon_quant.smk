@@ -4,7 +4,7 @@ rule salmon_index:
         primary_assembly = config["ref"]["assembly"],
         transcripts      = config["ref"]["transcriptome"],
     output:
-        index = directory("results/02_salmon_g/salmon_index"),
+        index = directory("results/02salmon/salmon_index"),
     log:
         "results/00log/salmonIndex/log"
     threads:
@@ -29,26 +29,28 @@ def set_reads(wildcards, input):
             return reads
 
 ### Quasi-Mapping
-# Quantification using "salmon quant -g" 
+# Quantification using "salmon quant -g" to aggregate to gene level (to have the file ready)
+# Output also quant.sf and use it to aggregate at gene level w/ tximport as suggested by the creator Rob Paltro
+# https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
 
-rule salmon_quant_g:
+rule salmon_quant:
     input:
-        index = "results/02_salmon_g/salmon_index",
+        index = "results/02salmon/salmon_index",
         fastq = get_fq,
     output:
-        quant       = "results/02_salmon_g/{sample}/quant.sf",
-        quant_genes = "results/02_salmon_g/{sample}/quant.genes.sf",
-        sam         = "results/02_salmon_g/{sample}/{sample}.sam",
+        quant       = "results/02salmon/{sample}/quant.sf",
+        quant_genes = "results/02salmon/{sample}/quant.genes.sf",
+        sam         = "results/02salmon/{sample}/{sample}.sam",
     log: 
-        "results/00log/salmonQuant_g/{sample}.log"
+        "results/00log/salmonQuant/{sample}.log"
     params:
         gtf           = config["ref"]["annotation"],
         options       = config["params"]["salmon"],
         library       = config["params"]["salmon_library"],
-        out_fold      = "results/02_salmon_g/{sample}",
+        out_fold      = "results/02salmon/{sample}",
         reads  	      = set_reads,
     threads:    
-        CLUSTER["salmon_quant_g"]["cpu"]
+        CLUSTER["salmon_quant"]["cpu"]
     shell:
         """
         salmon quant \
@@ -63,38 +65,6 @@ rule salmon_quant_g:
         > {output.sam}
         """
 
-# Quantification using "salmon quant" without the -g flag and tximport, as suggested by Rob Paltro
-# https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
-
-# rule salmon_quant_tximport:
-#     input:
-#         index = "results/02_salmon/salmon_index",
-#         fastq = get_fq,
-#     output:
-#         quant       = "results/02_salmon_tx/{sample}/quant.sf",
-#         #quant_genes = "results/02_salmon_tx/{sample}/quant.genes.sf",
-#         sam         = "results/02_salmon_tx/{sample}/{sample}.sam",
-#     log: 
-#         "results/00log/salmonQuant_tx/{sample}.log"
-#     params:
-#         options       = config["params"]["salmon"],
-#         library       = config["params"]["salmon_library"],
-#         out_fold      = "results/02_salmon_tx/{sample}",
-#         reads  	      = set_reads,
-#     threads:    
-#         CLUSTER["salmon_quant"]["cpu"]
-#     shell:
-#         """
-#         salmon quant \
-#         -i {input.index} \
-#         -p {threads} \
-#         -l {params.library}\
-#         {params.reads} \
-#         -o {params.out_fold} \
-#         {params.options} \
-#         2> {log} \
-#         > {output.sam}
-#         """
 
 ### Salmon Alignment mode
 # Fall back to Alignment based quantification with STAR but use Salmon in align mode instead of featureCounts
