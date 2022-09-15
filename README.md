@@ -74,6 +74,8 @@ Also here you will have to design the contrasts to perfrom differential expressi
 
 Multiple threshold values can be set, so the pipeline will automatically create volcano plots, enrichment analyses and filtered tables for each combination of the thresholds that have been set.
 
+To avoid crating useless files, an option for Salmon index is present in `config.yaml`. There you can set if you want the pipeline to produce a new transcriptome index (set it to *false*) or use the one that you already have. 
+
 
 ### Cluster configuration
 

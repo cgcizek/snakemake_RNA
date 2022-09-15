@@ -1,5 +1,18 @@
-## Migrate the output to a DATA/DP and run it only once per transcriptome version
-# the commands of the index rule were obtained from here: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
+########################################################
+# This file contains rules to:
+## 1) Index the transcriptome, it gets stored in DATA/DP, move it where you want
+##		and update the config file @ ref-salmon_index
+## 2) Quantify transcript abundance. Output both quant.sf and quant.genes.sf
+## 		Quant.sf is used to then aggregate to gene level abundacnies w/ tximport
+##		and downstream with DEseq2
+########################################################
+
+# RUN THIS ONLY IF THE INDEX IS DIFFERENT, salmon_quant will crash because it'll not found
+# the index. I use this part of the pipeline to avoid running this step in a different script
+# Find a way to make it as a conditional execution based on the existence of the index
+
+# The commands of the index rule were obtained from here: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
+
 rule salmon_index:
     input:
         primary_assembly = config["ref"]["assembly"],
@@ -8,6 +21,8 @@ rule salmon_index:
         index = directory("results/02salmon/salmon_index"),
     log:
         "results/00log/salmonIndex/log"
+    params:
+        destination = config["ref"]["salmon_index"],
     threads:
         CLUSTER["salmon_index"]["cpu"]
     shell:
@@ -17,8 +32,9 @@ rule salmon_index:
         sed -i.bak -e 's/>//g' decoys.txt
         cat {input.transcripts} {input.primary_assembly} > gentrome.fa.gz
         salmon index -t gentrome.fa.gz -d decoys.txt -p {threads} -i {output} --gencode
-		rm decoys.txt* gentrome.fa.gz
+        rm decoys.txt* gentrome.fa.gz
         """
+
 
 def set_reads(wildcards, input):
         n = len(input.fastq)
@@ -29,14 +45,16 @@ def set_reads(wildcards, input):
             reads = "-1 {} -2 {}".format(*input.fastq)
             return reads
 
-### Quasi-Mapping
+### Quasi-Mapping Mode
 # Quantification using "salmon quant -g" to aggregate to gene level (to have the file ready)
-# Output also quant.sf and use it to aggregate at gene level w/ tximport as suggested by the creator Rob Paltro
+# Output also quant.sf and use it to aggregate at gene level w/ tximport in R as suggested by the creator Rob Paltro
 # https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
 
+#index = config["ref"]["salmon_index"],
 rule salmon_quant:
     input:
-        index = "results/02salmon/salmon_index",
+        index = check_index,
+        #index = "results/02salmon/salmon_index",
         fastq = get_fq,
     output:
         quant       = "results/02salmon/{sample}/quant.sf",

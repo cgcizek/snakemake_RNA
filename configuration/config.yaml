@@ -36,6 +36,7 @@ lfcShrink: TRUE
 seed: 1234
 
 
+# Ref
 ref:
   # Select the genome of the organism, needed to perform GO analyses. Supported: mouse, human.
   genome: "mouse"
@@ -43,6 +44,8 @@ ref:
   index: /hpcnfs/data/DP/STAR_INDEXES/v2.7.5a/GRCm38
   
   ##### SALMON
+  # transriptome Indexed with `salmon index` function
+  salmon_index: /hpcnfs/data/DP/Databases/Salmon_index/mm10/salmon_index
   # gtf file with transcripts
   annotation: /hpcnfs/data/DP/GENCODE_GENOMES/GRCm38/M21/gencode.vM21.annotation.gtf
   # fasta of transcripts
@@ -69,6 +72,9 @@ ref:
     # Columns to skip in case the file has a wired header (like in the case of genInfo.tab from STAR)
     skip: 1
 
+# Tell snakemake if Salmon index already exist or it has to produce one, True or False
+salmon_index_option:
+  exist: True
 
 pca:
   labels:

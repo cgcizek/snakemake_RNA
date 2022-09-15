@@ -61,7 +61,7 @@ rule mergeFastq_se:
         cat {input} > {output}
         """
 
-## I have to figure out why dani decided to remove fastp rule
+## I have to figure out why dani decided to remove fastp rule, given that he never finished it, it might be that simply he was skipping steps to make the testing faster
 # rule fastp_pe:
 #     input:
 #         fw = "{tmp}/fastq/{{sample}}.1.fastq.gz".format(tmp=config["tmp"]),

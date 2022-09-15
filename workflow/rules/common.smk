@@ -34,3 +34,11 @@ def get_fq_forward(wildcards):
             return "{tmp}/fastq/{sample}.1.fastq.gz".format(**wildcards, tmp = config["tmp"])
         # single end sample
         return "{tmp}/fastq/{sample}.se.fastq.gz".format(tmp = config["tmp"], **wildcards)
+
+# Check if salmon index is store in DATA/DP, otherwise create it
+
+def check_index(wildcards):
+	if config['salmon_index_option']["exist"]:
+		return ["salmon_index"]
+	else:
+		return "results/02salmon/salmon_index"

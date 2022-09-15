@@ -7,7 +7,7 @@
 		"jname"       : "{rule}",
 		"output"      : "results/.clusterLogs/{rule}.{wildcards}.out",
 		"error"       : "results/.clusterLogs/{rule}.{wildcards}.err",
-		"MaxMem"      : 4
+		"MaxMem"      : 5
 	},
 	"fastp_pe" :
 	{
@@ -34,7 +34,7 @@
 	"salmon_quant":
 	{
 		"cpu" : 6,
-		"MaxMem" : 30
+		"MaxMem" : 35
 	},
 	"deseq2":
 	{
