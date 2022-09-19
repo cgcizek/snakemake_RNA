@@ -6,7 +6,7 @@ from snakemake.utils import validate, min_version
 min_version("5.9.1")
 
 ##### Singularity image path #####
-singularity: "/hpcnfs/data/DP/Singularity/rnaseq-snakemake_180321.sif"
+singularity: "/hpcnfs/data/DP/Singularity/rnaseq_snakemake_2200916.sif"
 
 ##### load config, cluster config and sample sheets #####
 configfile: "configuration/config.yaml"
@@ -16,6 +16,7 @@ configfile: "configuration/config.yaml"
 #-----------------------------------------------------------------------------------------------------------------------
 # Load sample sheet and cluster configuration
 #-----------------------------------------------------------------------------------------------------------------------
+
 CLUSTER = json.load(open(config['cluster']))
 # CLUSTER     = yaml.load(open(config['cluster'], 'r'), Loader=yaml.FullLoader)
 
@@ -32,18 +33,19 @@ SAMPLES = set(units["sample"])
 #-----------------------------------------------------------------------------------------------------------------------
 # Define optional output (based on config.yaml settings) in salmon mode
 #-----------------------------------------------------------------------------------------------------------------------
-if config["enrichments"]["do"]:
-    enrichments = expand("results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.xlsx", 
-                    contrast = config["diffexp"]["contrasts"], 
-                    pvalue = config["diffexp"]["pvalue"], 
-                    log2fc = config["diffexp"]["log2fc"],
-                    fpkm   = config["diffexp"]["fpkm"])
 
-    enrichments_downsampled = expand("results/04deseq2/downsampled/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.xlsx", 
+if config["enrichments"]["do"]:
+    enrichments = expand("results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_tpm{tpm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_tpm{tpm}.xlsx", 
+                    contrast = config["diffexp"]["contrasts"], 
+                    pvalue   = config["diffexp"]["pvalue"], 
+                    log2fc   = config["diffexp"]["log2fc"],
+                    tpm      = config["diffexp"]["tpm"])
+
+    enrichments_downsampled = expand("results/04deseq2/downsampled/{contrast}/log2fc{log2fc}_pval{pvalue}_tpm{tpm}/{contrast}_enrichments_log2fc{log2fc}_pval{pvalue}_tpm{tpm}.xlsx", 
             contrast = config["diffexp"]["contrasts"], 
-            pvalue = config["diffexp"]["pvalue"], 
-            log2fc = config["diffexp"]["log2fc"],
-            fpkm   = config["diffexp"]["fpkm"])
+            pvalue   = config["diffexp"]["pvalue"], 
+            log2fc   = config["diffexp"]["log2fc"],
+            tpm      = config["diffexp"]["tpm"])
 else:
     enrichments = []
     enrichments_downsampled = []
@@ -52,6 +54,7 @@ else:
 #-----------------------------------------------------------------------------------------------------------------------
 # Define multiple outputs based on the output files desired
 #-----------------------------------------------------------------------------------------------------------------------
+
 rule all: 
     input:
         expand("results/02salmon/{sample}/quant.sf", sample = SAMPLES),
@@ -59,11 +62,11 @@ rule all:
         expand("results/04deseq2/pca_top{ntop}.pdf", ntop = config["pca"]["ntop"]),
         "results/04deseq2/tpm.tsv",
         enrichments,
-        expand("results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_volcano_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.pdf", 
+        expand("results/04deseq2/{contrast}/log2fc{log2fc}_pval{pvalue}_tpm{tpm}/{contrast}_volcano_log2fc{log2fc}_pval{pvalue}_tpm{tpm}.pdf", 
             contrast = config["diffexp"]["contrasts"], 
-            pvalue = config["diffexp"]["pvalue"], 
-            log2fc = config["diffexp"]["log2fc"],
-            fpkm   = config["diffexp"]["fpkm"])
+            pvalue   = config["diffexp"]["pvalue"], 
+            log2fc   = config["diffexp"]["log2fc"],
+            tpm      = config["diffexp"]["tpm"])
 
 rule all_downsampled: 
     input:
@@ -71,25 +74,49 @@ rule all_downsampled:
         "results/01qc/multiqc/multiqc_report.html",
         expand("results/05bigwig/{sample}.bw", sample = SAMPLES),
         enrichments_downsampled,
-        expand("results/04deseq2/downsampled/{contrast}/log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}/{contrast}_volcano_log2fc{log2fc}_pval{pvalue}_fpkm{fpkm}.pdf", 
+        expand("results/04deseq2/downsampled/{contrast}/log2fc{log2fc}_pval{pvalue}_tpm{tpm}/{contrast}_volcano_log2fc{log2fc}_pval{pvalue}_tpm{tpm}.pdf", 
             contrast = config["diffexp"]["contrasts"], 
-            pvalue = config["diffexp"]["pvalue"], 
-            log2fc = config["diffexp"]["log2fc"],
-            fpkm   = config["diffexp"]["fpkm"])
+            pvalue   = config["diffexp"]["pvalue"], 
+            log2fc   = config["diffexp"]["log2fc"],
+            tpm      = config["diffexp"]["tpm"])
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Auxiliary rules all based on different outputfiles
+#-----------------------------------------------------------------------------------------------------------------------
+
+# all_bw_salmon:
+    # input:
+    #    expand()
+
+#rule all_star_fc_bw:
+    # input:
+    #     expand("results/05bigwig/{sample}.bw", sample = SAMPLES)
 
 
+#rule all_salmon_align:
+
+#-----------------------------------------------------------------------------------------------------------------------
 ##### load rules #####
+#-----------------------------------------------------------------------------------------------------------------------
+
 include: "rules/common.smk"
 include: "rules/trim.smk"
 include: "rules/salmon_quant.smk"
 include: "rules/diffExp.smk"
 include: "rules/diffExp_downsample.smk"
-include: "rules/qc.smk"
+#include: "rules/qc.smk"
+#include: "rules/align.smk"
 
+#-----------------------------------------------------------------------------------------------------------------------
 ##### set localrules
+#-----------------------------------------------------------------------------------------------------------------------
+
 localrules: all, all_downsampled, cp_fastq_pe, cp_fastq_se
 
+#-----------------------------------------------------------------------------------------------------------------------
 ##### handle possible errors, clean temp folders #####
+#-----------------------------------------------------------------------------------------------------------------------
+
 onsuccess:
     shell("""
     rm -r results/fastq/

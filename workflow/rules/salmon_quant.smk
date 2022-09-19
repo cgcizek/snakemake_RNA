@@ -50,12 +50,12 @@ def set_reads(wildcards, input):
 # Output also quant.sf and use it to aggregate at gene level w/ tximport in R as suggested by the creator Rob Paltro
 # https://crazyhottommy.blogspot.com/2016/07/comparing-salmon-kalliso-and-star-htseq.html
 
-#index = config["ref"]["salmon_index"],
+# FIX SAM OUTPUT
 rule salmon_quant:
     input:
         index = check_index,
-        #index = "results/02salmon/salmon_index",
-        fastq = get_fq,
+        #index = config["salmon_index"],
+        fastq = get_fq
     output:
         quant       = "results/02salmon/{sample}/quant.sf",
         quant_genes = "results/02salmon/{sample}/quant.genes.sf",
@@ -84,10 +84,35 @@ rule salmon_quant:
         > {output.sam}
         """
 
+# ### SALMON BigWig
+# rule salmon_bw:
+#     input:
+#         rules.salmon_quant.output.sam
+#     output:
+#         "results/05bigwig_salmon/{sample}.bw"
+#     params:
+#         tmp = "results/05bigwig_salmon/{sample}_tmp"
+#     log:
+#         "results/00log/bam2bigwig_salmon/{sample}.log"
+#     threads:
+#         CLUSTER["bam2bigwig"]["cpu"]
+#     run:
+#     """
+#     take correct lines of the SAM file {input} | samtools view -@ {threads} -Sb - | \
+#     samtools sort -@ {threads} -o {params.tpm}
+#     samtools index {params.tmp}
+#     bamCoverage --normalizeUsing CPM -p {threads} -bs 1 -b {params.tmp} -o {output} 2> {log}
+#     rm {params.tmp} {params.tmp}.bai
+#     """
 
-### Salmon Alignment mode
+
+
+
+
+### Salmon Alignment mode (i'm not planning on using it)
 # Fall back to Alignment based quantification with STAR but use Salmon in align mode instead of featureCounts
 # # Most star parameters taken from https://www.biorxiv.org/content/biorxiv/early/2019/10/31/657874.full.pdf
+
 # rule star:
 #     input:
 #         get_fq
@@ -128,7 +153,8 @@ rule salmon_quant:
 #         --alignIntronMax 1000000 \
 #         --alignMatesGapMax 1000000 \
 #         {params.star_params} > {log.align}
-#         samtools view -h {params.out_dir}Aligned.toTranscriptome.out.bam \
+#         samtools view -h {params.out_dir} Aligned.toTranscriptome.out.bam \
 #         | samblaster --removeDups 2> {log.rm_dups} \
 #         | samtools view -Sb - > {output.bam} 2>> {log.align}
 #         """
+

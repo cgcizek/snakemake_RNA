@@ -1,17 +1,17 @@
 #----------------------------------------------------------------------------------------------
 # Annotation of differential expression table
 #----------------------------------------------------------------------------------------------
-Annot_DE <- function(df, log2FC = 2, padjust = 0.05, fpkm = 0) {
+Annot_DE <- function(df, log2FC = 2, padjust = 0.05, tpm = 0) {
   require(dplyr)
   require(purrr)
     
-    df <- mutate(df, max_fpkm = reduce(select(df, contains("_FPKM")), pmax)) # Add column with max fpkm value between conditions
+    df <- mutate(df, max_tpm = reduce(select(df, contains("_TPM")), pmax)) # Add column with max tpm value between conditions
     
     df$DEG <- "NS"
-    df$DEG[which(df$log2FoldChange >= log2FC & df$padj <= padjust & df$max_fpkm >= fpkm)] <- "Upregulated" #Annotate UPregulated genes
-    df$DEG[which(df$log2FoldChange <= -log2FC & df$padj <= padjust & df$max_fpkm >= fpkm)] <- "Downregulated" #Annotate DOWNregulated genes
+    df$DEG[which(df$log2FoldChange >= log2FC & df$padj <= padjust & df$max_tpm >= tpm)] <- "Upregulated" #Annotate UPregulated genes
+    df$DEG[which(df$log2FoldChange <= -log2FC & df$padj <= padjust & df$max_tpm >= tpm)] <- "Downregulated" #Annotate DOWNregulated genes
     
-    df <- select(df, -max_fpkm) # Remove temporary max fpkm column
+    df <- select(df, -max_tpm) # Remove temporary max tpm column
   
   return(df)
 }
@@ -134,17 +134,17 @@ msig_db_enrichment <- function(
 GSEA_enrichment <- function(df, pathways.gmt) {
   require(clusterProfiler)
   pathways <- fgsea::gmtPathways(pathways.gmt)
-  
+  df <- df %>% filter(!is.na(log2FoldChange))
   # Create a list containing a named vector (with genenames) of log2fc
   geneList <- df$log2FoldChange
-  names(geneList) <- toupper(df$Geneid)
+  names(geneList) <- toupper(df$SYMBOL)
   
   # Run GSEA algorithm
   fgseaRes <- fgsea::fgsea(pathways = pathways, 
                            stats   = geneList,
                            minSize = 15,
-                           maxSize = 2000,
-                           nperm   = 10000)
+                           maxSize = 2000)
+                           #nperm   = 10000)
   return(fgseaRes)
 }
 

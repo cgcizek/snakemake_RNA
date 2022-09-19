@@ -13,7 +13,7 @@ rule fastqc:
     (without duplicating the file which would be less efficient). To make sure that 
     the symlink will work it needs to be created from the folder where it's going to be,
     that's why the cd command of the rule it's imporant. Since the fastq folder can change
-    this step needs to work always, it's the only solution I cam up with.
+    this step needs to work always, it's the only solution I came up with.
     """
     input:  
         get_fq_forward

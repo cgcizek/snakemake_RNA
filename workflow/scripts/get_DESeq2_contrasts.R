@@ -41,7 +41,7 @@ if (do_lfcShrink == TRUE) {
 }
 
 #-----------------------------------------------------------------------------
-# Read fpkm table and calculate the average of replicates
+# Read tpm table and calculate the average of replicates
 #-----------------------------------------------------------------------------
 # Get samples from the conditions of the contrast
 colData <- read.table(snakemake@params[["samples"]], header=TRUE) %>%
@@ -52,18 +52,18 @@ if(!is.null(snakemake@params[["exclude"]])) {
     colData <- colData %>% filter( !sample %in% snakemake@params[["exclude"]] )
 }
 
-fpkm <- read.delim(snakemake@input[["fpkm"]], header = TRUE, check.names = FALSE)
+tpm <- read.delim(snakemake@input[["tpm"]], header = TRUE, check.names = FALSE)
 
-fpkm_table <- fpkm %>%
+tpm_table <- tpm %>%
   pivot_longer(cols =  -"Geneid") %>%
   filter(name %in% colData$sample) %>%
   left_join(colData, by = c("name" = "sample")) %>%
   group_by(condition, Geneid) %>%
-  summarise(FPKM = mean(value)) %>%
+  summarise(TPM = mean(value)) %>%
   ungroup %>%
-  mutate(condition = paste(condition, "_FPKM", sep = "")) %>%
+  mutate(condition = paste(condition, "_TPM", sep = "")) %>%
   pivot_wider(names_from = condition,
-              values_from = FPKM)
+              values_from = TPM)
 
 
 #------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ fpkm_table <- fpkm %>%
 #------------------------------------------------------------------------------------------
 res.tidy <- as.data.frame(res) %>%
   rownames_to_column(var = "Geneid") %>%
-  left_join(fpkm_table) %>%
+  left_join(tpm_table) %>%
   arrange(padj) %>%
   mutate_at(vars(-Geneid, -pvalue, -padj), list(~ round(., 2))) %>%
 # Transform padj values that are 1 to NA (just to make nicer the volcano),

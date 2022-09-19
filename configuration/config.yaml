@@ -88,7 +88,7 @@ diffexp:
   # samples to ignore. Write the name of the sample
   exclude: 
   # Filter thresholds to call differentially expressed genes
-  fpkm: 
+  tpm: 
     - 0
   pvalue: 
     - 0.05
@@ -102,6 +102,9 @@ diffexp:
     WT_P1-vs-P1KO:
       - WT_00h
       - Pcgf1KO_00h
+    SI53S-vs-I53Seta:
+      - SI53S
+      - I53Seta
 
       
 enrichments:
@@ -124,7 +127,12 @@ params:
   # Memory used by every core of samtools (GB). Be careful that
   # memory x threads is not bigger than the amount of memory assigned to align rule
   samtools_mem: 3
+  # STAR params for STAR + salmon
   star: "--readFilesCommand zcat"
+  # STAR params for STAR + featureCounts
+  star_noSalmon: "--outSAMattributes Standard \
+                  --outFilterMultimapNmax 1 \
+                  --readFilesCommand zcat"
   # Salmon params
   salmon: "--gcBias --seqBias --validateMappings"
   # Library type (stranded, non-stranded, inward,outward...). A means automatic, salmon will care about it.

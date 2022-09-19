@@ -20,7 +20,7 @@ DEA.annot <- read.delim(snakemake@input[[1]])
 genome       <- snakemake@params[["genome"]]
 pvalue       <- as.numeric(snakemake@params[["pvalue"]])
 qvalue       <- as.numeric(snakemake@params[["qvalue"]])
-fpkm         <- as.numeric(snakemake@wildcards[["fpkm"]])
+tpm          <- as.numeric(snakemake@wildcards[["tpm"]])
 set_universe <- as.logical(snakemake@params[["set_universe"]])
 
 
@@ -53,14 +53,14 @@ if (genome == "mouse") {
 # Get UP and DOWN-regulated 
 UP <- DEA.annot %>% 
   dplyr::filter(DEG == "Upregulated") %>% 
-  dplyr::select(Geneid) %>% 
+  dplyr::select(SYMBOL) %>% 
   pull %>%
   bitr(fromType = "SYMBOL",toType = c("ENTREZID"), OrgDb = db) %>%
   pull(ENTREZID)
 
 DWN <- DEA.annot %>% 
   dplyr::filter(DEG == "Downregulated") %>% 
-  dplyr::select(Geneid) %>% 
+  dplyr::select(SYMBOL) %>% 
   pull %>%
   bitr(fromType = "SYMBOL",toType = c("ENTREZID"), OrgDb = db) %>%
   pull(ENTREZID)
@@ -68,15 +68,15 @@ DWN <- DEA.annot %>%
 # Get universe of genes. Genes that have been considered for differential expression.
 if (set_universe == TRUE) {
   universe <- DEA.annot %>%
-    mutate(max_fpkm = purrr::reduce(dplyr::select(., contains("_FPKM")), pmax)) %>%
-    dplyr::filter(max_fpkm > fpkm) %>%
-    dplyr::select(Geneid) %>% 
+    mutate(max_tpm = purrr::reduce(dplyr::select(., contains("_TPM")), pmax)) %>%
+    dplyr::filter(max_tpm > tpm) %>%
+    dplyr::select(SYMBOL) %>% 
     pull %>%
     bitr(fromType = "SYMBOL", toType = c("ENTREZID"), OrgDb = db) %>%
     pull(ENTREZID)
 } else {
   universe <- DEA.annot %>%
-    dplyr::select(Geneid) %>% 
+    dplyr::select(SYMBOL) %>% 
     pull %>%
     bitr(fromType = "SYMBOL", toType = c("ENTREZID"), OrgDb = db) %>%
     pull(ENTREZID)
@@ -116,9 +116,9 @@ list_of_datasets <- list( "GO Upregulated"                 = UP.go@result %>% dp
                           "MSigDB_Hallmarks Downregulated" = DWN.msig_h@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),
                           "MSigDB_C2all Upregulated"       = UP.msig_c2@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),
                           "MSigDB_C2all Downregulated"     = DWN.msig_c2@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),                          
-                          "GSEA Hallmarks"                 = GSEA.hall %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,nMoreExtreme)) %>% arrange(pval) %>% add_row(),
-                          "GSEA c2all"                     = GSEA.c2all %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,nMoreExtreme)) %>% arrange(pval) %>% add_row(),
-                          "GSEA c3tft"                     = GSEA.c3tft %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,nMoreExtreme)) %>% arrange(pval) %>% add_row()
+                          "GSEA Hallmarks"                 = GSEA.hall %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
+                          "GSEA c2all"                     = GSEA.c2all %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
+                          "GSEA c3tft"                     = GSEA.c3tft %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row()
                           )
 
 write.xlsx(list_of_datasets, file = snakemake@output[["enrichments"]])
