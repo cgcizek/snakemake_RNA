@@ -93,3 +93,6 @@ rule bam2bigwig:
     bamCoverage --normalizeUsing CPM -p {threads} -bs 1 -b {params.tmp} -o {output} 2> {log}
         rm {params.tmp} {params.tmp}.bai
         """
+
+
+# rule to remove all the previous outputs to clean up the work dir.

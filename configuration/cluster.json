@@ -17,6 +17,11 @@
 	{
 		"cpu" : 5
 	},
+	"mergeFastq_pe":
+	{
+		"cpu" : 1,
+		"MaxMem" : 8 
+	},
 	"fastqc":
 	{
 		"cpu" : 1
@@ -26,6 +31,10 @@
 		"cpu" : 8,
 		"MaxMem" : 40
 	},
+	"featureCounts":
+	{
+		"cpu" : 5
+	}, 
 	"salmon_index":
 	{
 		"cpu" : 8,

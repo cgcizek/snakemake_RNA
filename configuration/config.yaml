@@ -127,6 +127,7 @@ params:
   # Memory used by every core of samtools (GB). Be careful that
   # memory x threads is not bigger than the amount of memory assigned to align rule
   samtools_mem: 3
+  featureCounts: "-s 0 -t exon -g gene_name"
   # STAR params for STAR + salmon
   star: "--readFilesCommand zcat"
   # STAR params for STAR + featureCounts

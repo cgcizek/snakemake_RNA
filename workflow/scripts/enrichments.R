@@ -95,9 +95,9 @@ UP.msig_h  <- msig_db_enrichment(UP, db = db, pvalue = pvalue, qvalue = qvalue, 
 DWN.msig_h <- msig_db_enrichment(DWN, db = db, pvalue = pvalue, qvalue = qvalue, universe = universe, term2gene = m_df.h)
 UP.msig_c2 <- msig_db_enrichment(UP, db = db, pvalue = pvalue, qvalue = qvalue, universe = universe, term2gene = m_df.c2)
 DWN.msig_c2<- msig_db_enrichment(DWN, db = db, pvalue = pvalue, qvalue = qvalue, universe = universe, term2gene = m_df.c2)
-GSEA.hall  <- GSEA_enrichment(DEA.annot, "resources/h.all.v6.2.symbols.gmt")
-GSEA.c2all <- GSEA_enrichment(DEA.annot, "resources/c2.all.v6.2.symbols.gmt")
-GSEA.c3tft <- GSEA_enrichment(DEA.annot, "resources/c3.tft.v6.2.symbols.gmt")
+# GSEA.hall  <- GSEA_enrichment(DEA.annot, "resources/h.all.v6.2.symbols.gmt")
+# GSEA.c2all <- GSEA_enrichment(DEA.annot, "resources/c2.all.v6.2.symbols.gmt")
+# GSEA.c3tft <- GSEA_enrichment(DEA.annot, "resources/c3.tft.v6.2.symbols.gmt")
 
 
 #------------------------------------------------------------------------------------------
@@ -115,10 +115,10 @@ list_of_datasets <- list( "GO Upregulated"                 = UP.go@result %>% dp
                           "MSigDB_Hallmarks Upregulated"   = UP.msig_h@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),
                           "MSigDB_Hallmarks Downregulated" = DWN.msig_h@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),
                           "MSigDB_C2all Upregulated"       = UP.msig_c2@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),
-                          "MSigDB_C2all Downregulated"     = DWN.msig_c2@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row(),                          
-                          "GSEA Hallmarks"                 = GSEA.hall %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
-                          "GSEA c2all"                     = GSEA.c2all %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
-                          "GSEA c3tft"                     = GSEA.c3tft %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row()
+                          "MSigDB_C2all Downregulated"     = DWN.msig_c2@result %>% dplyr::filter(p.adjust < !!pvalue) %>% add_row()                          
+                          # "GSEA Hallmarks"                 = GSEA.hall %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
+                          # "GSEA c2all"                     = GSEA.c2all %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row(),
+                          # "GSEA c3tft"                     = GSEA.c3tft %>% dplyr::filter(padj < 0.25) %>% dplyr::select(-c(leadingEdge,6)) %>% arrange(pval) %>% add_row()
                           )
 
 write.xlsx(list_of_datasets, file = snakemake@output[["enrichments"]])

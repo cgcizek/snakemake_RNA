@@ -88,9 +88,9 @@ rule all_downsampled:
     # input:
     #    expand()
 
-#rule all_star_fc_bw:
-    # input:
-    #     expand("results/05bigwig/{sample}.bw", sample = SAMPLES)
+rule all_star_fc_bw:
+    input:
+        expand("results/05bigwig/{sample}.bw", sample = SAMPLES)
 
 
 #rule all_salmon_align:
@@ -105,7 +105,7 @@ include: "rules/salmon_quant.smk"
 include: "rules/diffExp.smk"
 include: "rules/diffExp_downsample.smk"
 #include: "rules/qc.smk"
-#include: "rules/align.smk"
+include: "rules/align.smk"
 
 #-----------------------------------------------------------------------------------------------------------------------
 ##### set localrules
