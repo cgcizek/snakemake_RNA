@@ -1,5 +1,5 @@
 jobs: 500
-cluster-config: "configuration/cluster.json"
+cluster-config: "configuration/cluster.yaml"
 latency-wait: 120
 keep-going: true
 use-singularity: true

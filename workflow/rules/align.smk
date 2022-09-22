@@ -10,8 +10,8 @@ rule star:
     input:
         get_fq
     output:
-        bam   = "results/02alignments/{sample}/{sample}.bam",
-        index = "results/02alignments/{sample}/{sample}.bam.bai",
+        bam   = temp("results/02alignments/{sample}/{sample}.bam"),
+        index = temp("results/02alignments/{sample}/{sample}.bam.bai"),
         log   = "results/02alignments/{sample}/Log.final.out"
     log:
         align   = "results/00log/alignments/{sample}.log",
@@ -47,10 +47,10 @@ rule featureCounts:
         rules.star.output.bam
     output: 
         annot_sam     = temp("results/03featureCounts/{sample}/{sample}.bam.featureCounts.sam"),
-        featureCounts = "results/03featureCounts/{sample}/{sample}.featureCounts",
-        summary       = "results/03featureCounts/{sample}/{sample}.featureCounts.summary",
-        counts        = "results/03featureCounts/{sample}/{sample}.counts",
-        rpkm          = "results/03featureCounts/{sample}/{sample}.rpkm"
+        featureCounts = temp("results/03featureCounts/{sample}/{sample}.featureCounts"),
+        summary       = temp("results/03featureCounts/{sample}/{sample}.featureCounts.summary"),
+        #counts        = temp("results/03featureCounts/{sample}/{sample}.counts"),
+        #rpkm          = temp("results/03featureCounts/{sample}/{sample}.rpkm"),
         # tpm           = "results/03featureCounts/{sample}/{sample}.tpm"
     log:
         "results/00log/featureCounts/{sample}.log"

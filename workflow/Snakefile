@@ -8,17 +8,16 @@ min_version("5.9.1")
 ##### Singularity image path #####
 singularity: "/hpcnfs/data/DP/Singularity/rnaseq_snakemake_2200916.sif"
 
-##### load config, cluster config and sample sheets #####
+
+#-----------------------------------------------------------------------------------------------------------------------
+# Load confign file, cluster configuration and sample sheet
+#-----------------------------------------------------------------------------------------------------------------------
+
 configfile: "configuration/config.yaml"
 # validate(config, schema="schemas/config.schema.yaml")
 
-
-#-----------------------------------------------------------------------------------------------------------------------
-# Load sample sheet and cluster configuration
-#-----------------------------------------------------------------------------------------------------------------------
-
-CLUSTER = json.load(open(config['cluster']))
-# CLUSTER     = yaml.load(open(config['cluster'], 'r'), Loader=yaml.FullLoader)
+#CLUSTER = json.load(open(config['cluster']))
+CLUSTER     = yaml.load(open(config['cluster'], 'r'), Loader=yaml.FullLoader)
 
 samples = pd.read_csv( config["samples"], sep = "\t").set_index("sample", drop=False)
 # validate(samples, schema="schemas/samples.schema.yaml")
@@ -58,6 +57,7 @@ else:
 rule all: 
     input:
         expand("results/02salmon/{sample}/quant.sf", sample = SAMPLES),
+        "results/01qc/multiqc/multiqc_report.html",
         "results/04deseq2/all.rds", 
         expand("results/04deseq2/pca_top{ntop}.pdf", ntop = config["pca"]["ntop"]),
         "results/04deseq2/tpm.tsv",
@@ -66,7 +66,8 @@ rule all:
             contrast = config["diffexp"]["contrasts"], 
             pvalue   = config["diffexp"]["pvalue"], 
             log2fc   = config["diffexp"]["log2fc"],
-            tpm      = config["diffexp"]["tpm"])
+            tpm      = config["diffexp"]["tpm"]),
+        
 
 rule all_downsampled: 
     input:
@@ -104,7 +105,7 @@ include: "rules/trim.smk"
 include: "rules/salmon_quant.smk"
 include: "rules/diffExp.smk"
 include: "rules/diffExp_downsample.smk"
-#include: "rules/qc.smk"
+include: "rules/qc.smk"
 include: "rules/align.smk"
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -119,7 +120,7 @@ localrules: all, all_downsampled, cp_fastq_pe, cp_fastq_se
 
 onsuccess:
     shell("""
-    rm -r results/fastq/
+    rm -rf results/fastq/ results/03featureCounts
     qselect -u `whoami` -s E | xargs qdel -Wforce # Remove potential jobs in E state
     """)
 

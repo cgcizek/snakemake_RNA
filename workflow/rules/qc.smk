@@ -51,60 +51,60 @@ rule rseqc_gtf2bed:
     shell:
         "resources/gtfToGenePred {input} {output.pred} && resources/genePredToBed {output.pred} {output.bed}"
 
-rule rseqc_stat:
-    input:
-        rules.star.output.bam,
-    output:
-        "results/01qc/rseqc/{sample}.stats.txt"
-    priority: 1
-    log:
-        "results/00log/rseqc/rseqc_stat/{sample}.log"
-    shell:
-        "bam_stat.py -i {input} > {output} 2> {log}"
+# rule rseqc_stat:
+#     input:
+#         rules.star.output.bam,
+#     output:
+#         "results/01qc/rseqc/{sample}.stats.txt"
+#     priority: 1
+#     log:
+#         "results/00log/rseqc/rseqc_stat/{sample}.log"
+#     shell:
+#         "bam_stat.py -i {input} > {output} 2> {log}"
 
-rule rseqc_innerdis:
-    input:
-        bam = rules.star.output.bam,
-        bed = "results/01qc/rseqc/annotation.bed"
-    output:
-        "results/01qc/rseqc/{sample}.inner_distance_freq.inner_distance_freq.txt"
-    priority: 1
-    log:
-        "results/00log/rseqc/rseqc_innerdis/{sample}.log"
-    params:
-        prefix="results/01qc/rseqc/{sample}.inner_distance_freq"
-    shell:
-        "inner_distance.py -r {input.bed} -i {input.bam} -o {params.prefix} > {log} 2>&1"
+# rule rseqc_innerdis:
+#     input:
+#         bam = rules.star.output.bam,
+#         bed = "results/01qc/rseqc/annotation.bed"
+#     output:
+#         "results/01qc/rseqc/{sample}.inner_distance_freq.inner_distance_freq.txt"
+#     priority: 1
+#     log:
+#         "results/00log/rseqc/rseqc_innerdis/{sample}.log"
+#     params:
+#         prefix="results/01qc/rseqc/{sample}.inner_distance_freq"
+#     shell:
+#         "inner_distance.py -r {input.bed} -i {input.bam} -o {params.prefix} > {log} 2>&1"
 
 
-rule rseqc_readdis:
-    input:
-        bam = rules.star.output.bam,
-        bed = "results/01qc/rseqc/annotation.bed"
-    output:
-        "results/01qc/rseqc/{sample}.read_distribution.txt"
-    priority: 1
-    log:
-        "results/00log/rseqc/rseqc_readdis/{sample}.log"
-    shell:
-        "read_distribution.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
+# rule rseqc_readdis:
+#     input:
+#         bam = rules.star.output.bam,
+#         bed = "results/01qc/rseqc/annotation.bed"
+#     output:
+#         "results/01qc/rseqc/{sample}.read_distribution.txt"
+#     priority: 1
+#     log:
+#         "results/00log/rseqc/rseqc_readdis/{sample}.log"
+#     shell:
+#         "read_distribution.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
 
-rule rseqc_geneCoverage:
-    input:
-        bam   = rules.star.output.bam,
-        index = rules.star.output.index,
-        bed   = "results/01qc/rseqc/annotation.bed"
-    output:
-        "results/01qc/rseqc/{sample}.geneBodyCoverage.geneBodyCoverage.txt"
-    params:
-        prefix="results/01qc/rseqc/{sample}.geneBodyCoverage"
-    priority: 1
-    shadow:
-        "minimal"
-    log:
-        "results/00log/rseqc/rseqc_geneCoverage/{sample}.log"
-    shell:
-        "geneBody_coverage.py -r {input.bed} -i {input.bam}  -o {params.prefix} 2> {log}"
+# rule rseqc_geneCoverage:
+#     input:
+#         bam   = rules.star.output.bam,
+#         index = rules.star.output.index,
+#         bed   = "results/01qc/rseqc/annotation.bed"
+#     output:
+#         "results/01qc/rseqc/{sample}.geneBodyCoverage.geneBodyCoverage.txt"
+#     params:
+#         prefix="results/01qc/rseqc/{sample}.geneBodyCoverage"
+#     priority: 1
+#     shadow:
+#         "minimal"
+#     log:
+#         "results/00log/rseqc/rseqc_geneCoverage/{sample}.log"
+#     shell:
+#         "geneBody_coverage.py -r {input.bed} -i {input.bam}  -o {params.prefix} 2> {log}"
 
 # rule rseqc_readdup:
 #	input:
@@ -183,13 +183,6 @@ rule rseqc_geneCoverage:
 rule multiQC_inputs:
     input:
         expand("results/01qc/fqc/{sample}_fastqc.zip", sample = SAMPLES),
-        expand("results/02alignments/{sample}/Log.final.out", sample = SAMPLES),
-        expand("results/03featureCounts/{sample}/{sample}.featureCounts.summary", sample = SAMPLES),
-        expand("results/01qc/rseqc/{sample}.stats.txt", sample = SAMPLES),
-        expand("results/01qc/rseqc/{sample}.inner_distance_freq.inner_distance_freq.txt", sample = SAMPLES),
-        expand("results/01qc/rseqc/{sample}.read_distribution.txt", sample = SAMPLES),
-        expand("results/00log/alignments/rm_dup/{sample}.log", sample = SAMPLES),
-        expand("results/01qc/rseqc/{sample}.geneBodyCoverage.geneBodyCoverage.txt", sample = SAMPLES),
     output: 
         file = "results/01qc/multiqc/multiqc_inputs.txt"
     message:
@@ -198,6 +191,26 @@ rule multiQC_inputs:
         with open(output.file, 'w') as outfile:
             for fname in input:
                     outfile.write(fname + "\n")
+
+# # ---------------- MultiQC report ----------------- #
+# rule multiQC_inputs:
+#     input:
+#         expand("results/01qc/fqc/{sample}_fastqc.zip", sample = SAMPLES),
+#         expand("results/02alignments/{sample}/Log.final.out", sample = SAMPLES),
+#         expand("results/03featureCounts/{sample}/{sample}.featureCounts.summary", sample = SAMPLES),
+#         expand("results/01qc/rseqc/{sample}.stats.txt", sample = SAMPLES),
+#         expand("results/01qc/rseqc/{sample}.inner_distance_freq.inner_distance_freq.txt", sample = SAMPLES),
+#         expand("results/01qc/rseqc/{sample}.read_distribution.txt", sample = SAMPLES),
+#         expand("results/00log/alignments/rm_dup/{sample}.log", sample = SAMPLES),
+#         expand("results/01qc/rseqc/{sample}.geneBodyCoverage.geneBodyCoverage.txt", sample = SAMPLES),
+#     output: 
+#         file = "results/01qc/multiqc/multiqc_inputs.txt"
+#     message:
+#         "create file containing all multiqc input files"
+#     run:
+#         with open(output.file, 'w') as outfile:
+#             for fname in input:
+#                     outfile.write(fname + "\n")
 
 rule multiQC:
     input:

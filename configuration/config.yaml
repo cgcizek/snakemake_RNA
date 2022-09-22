@@ -9,7 +9,7 @@ units: configuration/units.tsv
 
 
 # path (from the repository root) to cluster configuration. Parameters for submitting jobs to cluster via qsub
-cluster: configuration/cluster.json
+cluster: configuration/cluster.yaml
 
 
 # Prefix to temporary
