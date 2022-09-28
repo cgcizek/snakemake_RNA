@@ -1,11 +1,14 @@
 ########################################################
-# This file contains (old) rules to:
-## 1) Align reads with STAR
+# This file contains rules to:
+## 1) Align reads with STAR (remove duplicates)
 ## 2) Produce counts with featureCounts
 ## 3) Produce bigWig files (STAR + FC)
-## 4) Produce bigWig files (Salmon)
+## 4) Create BAm files marked for QC
 ########################################################
 
+## Alignment
+# Mapping fastq file to reference genome with STAR. In this branch of the pipeline
+# this rule is here only to output BW files.
 rule star:
     input:
         get_fq
@@ -41,17 +44,16 @@ rule star:
         samtools index {output.bam} 2>> {log.align}
         """
 
-
+## CountTables
+# producing count tables with featureCounts. In this branch of the pipeline, this rule is here only to
+# output an annotated sam/bam to be used w/ deeptols
 rule featureCounts:
     input:
         rules.star.output.bam
     output: 
         annot_sam     = temp("results/03featureCounts/{sample}/{sample}.bam.featureCounts.sam"),
         featureCounts = temp("results/03featureCounts/{sample}/{sample}.featureCounts"),
-        summary       = temp("results/03featureCounts/{sample}/{sample}.featureCounts.summary"),
-        #counts        = temp("results/03featureCounts/{sample}/{sample}.counts"),
-        #rpkm          = temp("results/03featureCounts/{sample}/{sample}.rpkm"),
-        # tpm           = "results/03featureCounts/{sample}/{sample}.tpm"
+        summary       = temp("results/03featureCounts/{sample}/{sample}.featureCounts.summary")
     log:
         "results/00log/featureCounts/{sample}.log"
     params:
@@ -70,11 +72,8 @@ rule featureCounts:
         {params.pair_end} {params.options} -R SAM {input} > {log} 2>&1
         """
 
-# Create a file with the counts, another for RPKM and another for TPM
-        # cut -f 1,7 {output.featureCounts} | tail -n +2 > {output.counts}
-        # seqdepth=$(awk '{{sum+=$2}}END{{print sum}}' {output.counts})
-        # awk -v s=${{seqdepth}} 'BEGIN{{OFS="\t"}}NR>2{{print $1,(($7)*1000000*1000)/($6*s)}}' {output.featureCounts} > {output.rpkm}
-
+## BigWig file
+# This rule output a normlaized bigwig file
 rule bam2bigwig:
     input:
         rules.featureCounts.output.annot_sam
@@ -96,3 +95,39 @@ rule bam2bigwig:
 
 
 # rule to remove all the previous outputs to clean up the work dir.
+
+## Alignment for QC
+# This rule output a bam file that has duplicates marked insted of reemoved (like the first rule). This is necessary
+# because QC rule library_complexity (qc.smk) requires a bam file with duplicates marked.
+rule star_dupRadar:
+    input:
+        get_fq
+    output:
+        bam           = temp("results/02alignments/{sample}/{sample}_marked.bam")
+    log:
+        align_dup     = "results/00log/alignments/{sample}_marked.log",
+        dup_mark      = "results/00log/alignments/dup_mark/{sample}_marked.log"
+    params:
+        out_dir       = directory("results/02alignments/marked/{sample}/"),
+        star_params   = config["params"]["star_noSalmon"],
+        # path to STAR reference genome index
+        index         = config["ref"]["index"],
+        samtools_mem  = config["params"]["samtools_mem"],
+    threads:
+        CLUSTER["star_dupRadar"]["cpu"]
+    shadow: 
+        "minimal"
+    shell: 
+        """
+        STAR --genomeDir {params.index} \
+        --runThreadN {threads} \
+        --readFilesIn {input} \
+        --outFileNamePrefix {params.out_dir} \
+        --outSAMtype SAM \
+        --outStd SAM \
+        {params.star_params} 2> {log.align_dup} \
+        | samblaster 2> {log.dup_mark} \
+        | samtools view -Sb -F 4 - \
+        | samtools sort -m {params.samtools_mem}G -@ {threads} -T {output.bam}.tmp -o {output.bam} - 2>> {log.align_dup}
+        samtools index {output.bam} 2>> {log.align_dup}
+        """

@@ -15,18 +15,23 @@ fastp_se:
 
 mergeFastq_pe:
     cpu : 1
-    MaxMem : 8
+    MaxMem : 12
 
 fastqc:
     cpu : 1
+    MaxMem : 8
 
 star:
-    cpu : 8
+    cpu : 6
     MaxMem : 45
 
+star_dupRadar:
+    cpu : 6
+    MaxMem : 60
+
 featureCounts:
-    cpu : 5
-    MaxMem : 10
+    cpu : 2
+    MaxMem : 15
 
 salmon_index:
     cpu : 8
@@ -44,11 +49,15 @@ deg_analysis:
     EmailNotice: "e"
 
 bam2bigwig:
-    cpu : 5
-    MaxMem : 10
+    cpu : 4
+    MaxMem : 20
 
 enrichments:
     MaxMem : 8
 
 enrichments_downsampled:
     MaxMem : 8
+
+library_complexity:
+    cpu : 6
+    MaxMem : 20

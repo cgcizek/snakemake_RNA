@@ -6,7 +6,7 @@ from snakemake.utils import validate, min_version
 min_version("5.9.1")
 
 ##### Singularity image path #####
-singularity: "/hpcnfs/data/DP/Singularity/rnaseq_snakemake_2200916.sif"
+singularity: "/hpcnfs/data/DP/Singularity/rnaseq_snakemake_220923.sif"
 
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -85,9 +85,10 @@ rule all_downsampled:
 # Auxiliary rules all based on different outputfiles
 #-----------------------------------------------------------------------------------------------------------------------
 
-# all_bw_salmon:
-    # input:
-    #    expand()
+rule all_tmp:
+    input:
+        expand("results/01qc/preseq/curve/{sample}_c_curve.txt", sample = SAMPLES),
+        expand("results/01qc/preseq/extrap/{sample}_lc_extrap.txt", sample = SAMPLES)
 
 rule all_star_fc_bw:
     input:
@@ -107,6 +108,7 @@ include: "rules/diffExp.smk"
 include: "rules/diffExp_downsample.smk"
 include: "rules/qc.smk"
 include: "rules/align.smk"
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 ##### set localrules

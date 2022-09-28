@@ -131,9 +131,7 @@ params:
   # STAR params for STAR + salmon
   star: "--readFilesCommand zcat"
   # STAR params for STAR + featureCounts
-  star_noSalmon: "--outSAMattributes Standard \
-                  --outFilterMultimapNmax 1 \
-                  --readFilesCommand zcat"
+  star_noSalmon: "--outSAMattributes Standard --outFilterMultimapNmax 1 --readFilesCommand zcat"
   # Salmon params
   salmon: "--gcBias --seqBias --validateMappings"
   # Library type (stranded, non-stranded, inward,outward...). A means automatic, salmon will care about it.

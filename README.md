@@ -79,7 +79,7 @@ To avoid crating useless files, an option for Salmon index is present in `config
 
 ### Cluster configuration
 
-`cluster.json` contains the per rule cluster parameters (ncpus, ram, walltime...). It can be modified as desired. In the future I want to remove this file in favour of the new [snakemake profiles](https://github.com/Snakemake-Profiles) system (see below), but I still need to understand a little bit better how it works and how to properly do the migration.
+`cluster.yaml` contains the per rule cluster parameters (ncpus, ram, walltime...). It can be modified as desired, RULE'S NAME has to match the NAME in the `cluster.yaml` for snakemake to understand cpus/mem requirements for that rule. In the future I want to remove this file in favour of the new [snakemake profiles](https://github.com/Snakemake-Profiles) system (see below), but I still need to understand a little bit better how it works and how to properly do the migration.
 
 
 ### Snakemake profiles

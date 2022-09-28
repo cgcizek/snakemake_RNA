@@ -10,7 +10,6 @@
 # RUN THIS ONLY IF THE INDEX IS DIFFERENT, salmon_quant will crash because it'll not found
 # the index. I use this part of the pipeline to avoid running this step in a different script
 # Find a way to make it as a conditional execution based on the existence of the index
-
 # The commands of the index rule were obtained from here: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
 
 rule salmon_index:
@@ -59,7 +58,6 @@ rule salmon_quant:
     output:
         quant       = "results/02salmon/{sample}/quant.sf",
         quant_genes = "results/02salmon/{sample}/quant.genes.sf",
-        sam         = "results/02salmon/{sample}/{sample}.sam",
     log: 
         "results/00log/salmonQuant/{sample}.log"
     params:
@@ -80,8 +78,7 @@ rule salmon_quant:
         {params.reads} \
         -o {params.out_fold} \
         {params.options} \
-        2> {log} \
-        > {output.sam}
+        2> {log}
         """
 
 # ### SALMON BigWig
