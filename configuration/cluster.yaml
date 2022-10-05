@@ -57,7 +57,3 @@ enrichments:
 
 enrichments_downsampled:
     MaxMem : 8
-
-library_complexity:
-    cpu : 6
-    MaxMem : 20

@@ -139,3 +139,6 @@ params:
   # In case trimming is set to true, define trimmining parameters
   fastp-se: "--stdin -t 1 -A -Q -L"
   fastp-pe: "-t 1 -A -Q -L"
+  # Params for preseq software, documentation here https://github.com/smithlabcode/preseq/blob/master/docs/manual.pdf
+  curve: "-B -v -P -s 500000 -l 100000000"
+  extrap: "-B -v -P -s 500000 -e 400000000 -l 100000000"
