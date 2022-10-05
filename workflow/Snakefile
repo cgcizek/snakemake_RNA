@@ -87,8 +87,9 @@ rule all_downsampled:
 
 rule all_tmp:
     input:
-        expand("results/01qc/preseq/curve/{sample}_c_curve.txt", sample = SAMPLES),
-        expand("results/01qc/preseq/extrap/{sample}_lc_extrap.txt", sample = SAMPLES)
+        "results/01qc/preseq/curve/c_curve.pdf"
+        # expand("results/01qc/preseq/curve/{sample}_c_curve.txt", sample = SAMPLES),
+        # expand("results/01qc/preseq/extrap/{sample}_lc_extrap.txt", sample = SAMPLES)
 
 rule all_star_fc_bw:
     input:

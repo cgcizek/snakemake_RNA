@@ -184,25 +184,40 @@
 # Takes in a BAM file with duplicates
 rule library_complexity:
     input:
-        expand("results/02alignments/{sample}/{sample}_marked.bam", sample = SAMPLES)
+        "results/02alignments/{sample}/{sample}_marked.bam"
     output:
         c_curve    = "results/01qc/preseq/curve/{sample}_c_curve.txt",
         lc_extrap  = "results/01qc/preseq/extrap/{sample}_lc_extrap.txt",
     message:
         "creating creating complexity tables for current and future genomic libraries"
+    params:
+        curve      = config["params"]["curve"],
+        extrap     = config["params"]["extrap"]
     log:
         c_curve    = "results/00log/preseq/{sample}_c_curve.log",
         lc_extrap  = "results/00log/preseq/{sample}_lc_extrap.log",
-    threads:
-        CLUSTER["library_complexity"]["cpu"]
     shell:
         """
-        c_curve -B -v \
-        -o {output.c_curve} {input} 2> {log.c_curve}
-        lc_extrap -B -v \
-        -o {output.lc_extrap} {input} 2> {log.c_curve}
-        echo {threads}
+       preseq c_curve {params.curve} \
+       -o {output.c_curve} {input} 2> {log.c_curve}
+       preseq lc_extrap {params.extrap} \
+       -o {output.lc_extrap} {input} 2> {log.lc_extrap}
         """
+
+rule plot_lib_complex:
+    input:
+       c_curve   = expand("results/01qc/preseq/curve/{sample}_c_curve.txt", sample = SAMPLES),
+       lc_extrap = expand("results/01qc/preseq/extrap/{sample}_lc_extrap.txt", sample = SAMPLES)
+    output:
+        c_curve_plot    = "results/01qc/preseq/curve/c_curve.pdf",
+        lc_extrap_plot  = "results/01qc/preseq/extrap/lc_extrap.pdf",
+        obs_exp_plot    = "results/01qc/preseq/obs_exp_plot.pdf"
+    params:
+        sample_names = expand("{sample}", sample = SAMPLES)
+    log:
+        "results/00log/preseq/plot_complexity_curve.log"
+    script:
+        "../scripts/plot_library_complexity.R"
 
 ## Duplication Plot
 # This rule uses and R package to plot and assess duplication problems. Read duplication has a strong
