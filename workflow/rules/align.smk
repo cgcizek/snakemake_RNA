@@ -13,7 +13,7 @@ rule star:
     input:
         get_fq
     output:
-        bam   = "results/02alignments/{sample}/{sample}.bam",
+        bam   = temp("results/02alignments/{sample}/{sample}.bam"),
         index = temp("results/02alignments/{sample}/{sample}.bam.bai"),
         log   = "results/02alignments/{sample}/Log.final.out"
     log:
@@ -103,7 +103,7 @@ rule star_dupRadar:
     input:
         get_fq
     output:
-        bam           = "results/02alignments/{sample}/{sample}_marked.bam"
+        bam           = temp("results/02alignments/{sample}/{sample}_marked.bam")
     log:
         align_dup     = "results/00log/alignments/{sample}_marked.log",
         dup_mark      = "results/00log/alignments/dup_mark/{sample}_marked.log"

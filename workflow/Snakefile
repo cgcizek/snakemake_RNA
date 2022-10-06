@@ -85,12 +85,6 @@ rule all_downsampled:
 # Auxiliary rules all based on different outputfiles
 #-----------------------------------------------------------------------------------------------------------------------
 
-rule all_tmp:
-    input:
-        "results/01qc/preseq/curve/c_curve.pdf"
-        # expand("results/01qc/preseq/curve/{sample}_c_curve.txt", sample = SAMPLES),
-        # expand("results/01qc/preseq/extrap/{sample}_lc_extrap.txt", sample = SAMPLES)
-
 rule all_star_fc_bw:
     input:
         expand("results/05bigwig/{sample}.bw", sample = SAMPLES)

@@ -57,3 +57,7 @@ enrichments:
 
 enrichments_downsampled:
     MaxMem : 8
+
+dupRadar:
+    cpu : 4
+    MaxMem : 8
