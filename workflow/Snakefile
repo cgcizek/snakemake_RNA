@@ -57,6 +57,7 @@ else:
 rule all: 
     input:
         expand("results/02salmon/{sample}/quant.sf", sample = SAMPLES),
+        #"results/01qc/preseq/curve/c_curve.pdf",
         "results/01qc/multiqc/multiqc_report.html",
         "results/04deseq2/all.rds", 
         expand("results/04deseq2/pca_top{ntop}.pdf", ntop = config["pca"]["ntop"]),
@@ -88,6 +89,9 @@ rule all_downsampled:
 rule all_star_fc_bw:
     input:
         expand("results/05bigwig/{sample}.bw", sample = SAMPLES)
+
+rule all_tmp:
+        "results/01qc/preseq/curve/c_curve.pdf"
 
 
 #rule all_salmon_align:

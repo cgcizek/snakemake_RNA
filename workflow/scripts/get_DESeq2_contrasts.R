@@ -67,7 +67,7 @@ tpm_table <- tpm %>%
 
 
 #------------------------------------------------------------------------------------------
-# Tidy output: Merge FPKM data, sort by p-value, Geneid to column, round to 2 deciamls
+# Tidy output: Merge TPM data, sort by p-value, Geneid to column, round to 2 deciamls
 #------------------------------------------------------------------------------------------
 res.tidy <- as.data.frame(res) %>%
   rownames_to_column(var = "Geneid") %>%

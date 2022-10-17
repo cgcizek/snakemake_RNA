@@ -27,7 +27,7 @@ star:
 
 star_dupRadar:
     cpu : 6
-    MaxMem : 60
+    MaxMem : 50
 
 featureCounts:
     cpu : 2

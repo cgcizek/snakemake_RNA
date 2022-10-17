@@ -101,12 +101,18 @@ diffexp:
     - 2.5
   # contrasts for the deseq2 results method
   contrasts:
-    WT_P1-vs-P1KO:
+    WT_00h-vs-WT_96h:
       - WT_00h
-      - Pcgf1KO_00h
-    SI53S-vs-I53Seta:
-      - SI53S
-      - I53Seta
+      - WT_96h
+    WT_48h-vs-WT_00h:
+      - WT_48h
+      - WT_00h
+    WT_96h-vs-WT_48h:
+      - WT_96h
+      - WT_48h
+    WT_96h-vs-WT_00h:
+      - WT_96h
+      - WT_00h
 
       
 enrichments:
@@ -143,4 +149,4 @@ params:
   fastp-pe: "-t 1 -A -Q -L"
   # Params for preseq software, documentation here https://github.com/smithlabcode/preseq/blob/master/docs/manual.pdf
   curve: "-B -v -P -s 500000 -l 100000000"
-  extrap: "-B -v -P -s 500000 -e 400000000 -l 100000000"
+  extrap: "-B -v -P -s 500000 -e 100000000 -l 100000000"

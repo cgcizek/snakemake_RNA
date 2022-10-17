@@ -182,7 +182,8 @@ rule multiQC_inputs:
         expand("results/01qc/rseqc/{sample}.read_distribution.txt", sample = SAMPLES),
         expand("results/00log/alignments/rm_dup/{sample}.log", sample = SAMPLES),
         expand("results/01qc/rseqc/{sample}.geneBodyCoverage.geneBodyCoverage.txt", sample = SAMPLES),
-        expand("results/01qc/dupradar/{sample}.pdf", sample = SAMPLES)
+        expand("results/01qc/dupradar/{sample}.pdf", sample = SAMPLES),
+        "results/01qc/preseq/curve/c_curve.pdf"
     output: 
         file = "results/01qc/multiqc/multiqc_inputs.txt"
     message:
