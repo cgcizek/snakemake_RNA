@@ -90,11 +90,10 @@ rule all_star_fc_bw:
     input:
         expand("results/05bigwig/{sample}.bw", sample = SAMPLES)
 
-# rule all_tmp:
-#         "results/01qc/preseq/curve/c_curve.pdf"
+rule all_bam:
+    input:
+        expand("results/02alignments/{sample}/{sample}.bam", sample = SAMPLES)
 
-
-#rule all_salmon_align:
 
 #-----------------------------------------------------------------------------------------------------------------------
 ##### load rules #####
