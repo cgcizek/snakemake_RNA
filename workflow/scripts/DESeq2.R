@@ -34,14 +34,24 @@ dds <- DESeqDataSetFromMatrix(countData = counts_ordered,
                               design    = ~ condition)
 dds <- DESeq(dds)
 
-norm_counts <- counts(dds, normalized = T) %>% 
-                data.frame %>% 
-                round(3) %>% 
-                rownames_to_column(var = "Geneid")
+#### Median of ratios method
+#norm_counts <- counts(dds, normalized = T) %>% 
+#                data.frame %>% 
+#                round(3) %>% 
+#                rownames_to_column(var = "Geneid")
+
+#### Regularized Log Transformation
+rlog_counts <- rlog(dds, blind = FALSE)
+
+norm_counts_rlog <- assay(rlog_counts) %>%  
+  data.frame %>% 
+  round(3) %>% 
+  rownames_to_column(var = "Geneid")
 
 
 #------------------------------------------------------------------------------------------
 # Save output
 #------------------------------------------------------------------------------------------
-write.table(norm_counts, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
+#write.table(norm_counts, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
+write.table(norm_counts, snakemake@output[["norm_counts_rlog"]], sep = "\t", quote = F, row.names = FALSE)
 saveRDS(dds, file=snakemake@output[["rds"]])
