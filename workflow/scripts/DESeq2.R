@@ -44,16 +44,27 @@ dds <- DESeqDataSetFromTximport(txi       = txi,
 
 dds <- DESeq(dds)
 
-
 Geneid <- as.character(snakemake@params[["annot_col"]])
-norm_counts <- counts(dds, normalized = T) %>% 
-                data.frame %>% 
-                round(3) %>% 
-                rownames_to_column(var = Geneid)
+
+### Median of Ratios Method
+#norm_counts <- counts(dds, normalized = T) %>% 
+#                data.frame %>% 
+#                round(3) %>% 
+#                rownames_to_column(var = Geneid)
+
+
+#### Regularized Log Transformation
+rlog_counts <- rlog(dds, blind = FALSE)
+
+norm_counts_rlog <- assay(rlog_counts) %>%  
+  data.frame %>% 
+  round(3) %>% 
+  rownames_to_column(var = Geneid)
 
 
 #------------------------------------------------------------------------------------------
 # Save output
 #------------------------------------------------------------------------------------------
-write.table(norm_counts, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
+#write.table(norm_counts, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
+write.table(norm_counts_rlog, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
 saveRDS(dds, file=snakemake@output[["rds"]])
