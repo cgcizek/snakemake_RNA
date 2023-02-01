@@ -53,5 +53,5 @@ norm_counts_rlog <- assay(rlog_counts) %>%
 # Save output
 #------------------------------------------------------------------------------------------
 #write.table(norm_counts, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
-write.table(norm_counts, snakemake@output[["norm_counts_rlog"]], sep = "\t", quote = F, row.names = FALSE)
+write.table(norm_counts_rlog, snakemake@output[["norm_counts"]], sep = "\t", quote = F, row.names = FALSE)
 saveRDS(dds, file=snakemake@output[["rds"]])
