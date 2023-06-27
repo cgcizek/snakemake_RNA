@@ -1,14 +1,14 @@
-# Pasini's lab RNA-seq pipeline
+# RNA-seq pipeline
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.4.3-brightgreen.svg)](https://snakemake.bitbucket.io)
 
 This branch uses Alignment + count method (STAR + featureCounts) to quantify *transcript abundance*, if you want the newer quasi-mapping method with Salmon, change to salmon branch
 ```
-git clone git@github.com:AndreaMariani-AM/RNAseq_snakemake.git
+git clone git@github.com:cgcizek/snakemake.git
 git checkout salmon
 ```
 
-Snakemake-based RNA-seq pipeline to be run in our PBS-based HPC using singularity containers. The singularity image that is used to run this pipeline is created from [this](https://github.com/AndreaMariani-AM/Docker/blob/main/RNAseq-snakemake/Dockerfile) docker container.
+Snakemake-based RNA-seq pipeline to be run in our PBS-based HPC using singularity containers. The singularity image that is used to run this pipeline is created from [this](https://github.com/cgcizek/Docker/blob/main/snakemake/Dockerfile) docker container.
 
 ## Setup
 
@@ -35,8 +35,8 @@ Here I am using lane1 and lane2 for consistency and making things more clear, bu
 
 | sample | lane | fq1 | fq2 |
 |--------|------|-----|------|
-| foo | potato | path/to/forward_lane1.fastq | path/to/reverse_lane1.fastq |
-| foo | checazzo | path/to/forward_lane2.fastq | path/to/reverse_lane2.fastq |
+| acl | first | path/to/forward_lane1.fastq | path/to/reverse_lane1.fastq |
+| acl | second | path/to/forward_lane2.fastq | path/to/reverse_lane2.fastq |
 
 * Finally the last 2 fields `fq1` and `fq2` correspond to the paths to the fastq files. `fq1` is the FORWARD read and  `fq2` the REVERSE. The order is very important because they will be sent in that order to the aligner.
 
